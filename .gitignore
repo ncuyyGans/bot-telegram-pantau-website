@@ -1,0 +1,12 @@
+# Runtime & data lokal — jangan di-commit
+.venv/
+__pycache__/
+*.pyc
+
+# Data operasional (berisi chat ID / bersifat lokal)
+state.json
+bot.log
+watchdog-runs.log
+bot.pid
+bot.lock
+watchdog.lock
