@@ -18,5 +18,7 @@ fi
 
 echo "$(date -u '+%Y-%m-%d %H:%M:%S') watchdog: bot mati, menyalakan ulang" >> "$LOG"
 cd "$DIR" || exit 1
-nohup "$DIR/.venv/bin/python" "$DIR/bot.py" >> bot.log 2>&1 &
+# 9>&- : jangan wariskan fd lock ke proses bot, agar lock hanya
+# dipegang selama watchdog berjalan (bukan selama bot hidup).
+nohup "$DIR/.venv/bin/python" "$DIR/bot.py" 9>&- >> bot.log 2>&1 &
 echo $! > bot.pid
