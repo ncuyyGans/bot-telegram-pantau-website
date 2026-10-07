@@ -38,7 +38,6 @@ from fetcher import fetch_page_text, normalize_text
 DIR = os.path.dirname(os.path.abspath(__file__))
 STATE_PATH = os.path.join(DIR, "state.json")
 LOCK_PATH = os.path.join(DIR, "bot.lock")
-LOG_PATH = os.path.join(DIR, "bot.log")
 
 INTERVALS = [
     (15, "15 menit"),
@@ -54,13 +53,12 @@ DOWN_ALERT_AFTER = 3  # gagal beruntun -> beri tahu owner sekali
 
 
 def log(msg):
+    # Catat ke stdout saja; watchdog.sh me-redirect stdout ke bot.log
+    # (>> bot.log 2>&1). JANGAN append ke file juga — dulu ditulis dua
+    # kali (print + open append) sehingga tiap baris log ganda dan
+    # mengecoh diagnosis (dikira dua proses jalan).
     line = f"{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} {msg}"
     print(line, flush=True)
-    try:
-        with open(LOG_PATH, "a") as f:
-            f.write(line + "\n")
-    except OSError:
-        pass
 
 
 # ---------------------------------------------------------------- state ---
