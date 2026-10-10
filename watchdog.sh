@@ -12,7 +12,10 @@ if ! flock -n 9; then
   exit 0
 fi
 
-if pgrep -f "webping-bot/bot.py" >/dev/null 2>&1; then
+# Pola [w]ebping... : trik bracket agar pgrep tidak mencocokkan
+# cmdline shell pemanggilnya sendiri bila string pola muncul harfiah
+# di perintah yang menjalankannya (self-match -> watchdog kira bot hidup).
+if pgrep -f "[w]ebping-bot/bot.py" >/dev/null 2>&1; then
   exit 0
 fi
 
