@@ -31,9 +31,22 @@ def _get_surrogate():
     if _surrogate_val and time.time() - _surrogate_ts < 600:
         return _surrogate_val
     # Muse environment: token dari kredensial custom.telegram-webping
-    # (lazy import agar modul ini tetap bisa dipakai di luar Muse)
-    sys.path.insert(0, "/opt/hatch/skills/skill-creator/bin")
-    from dynamic_credentials import dynamic_credential_entry
+    # (lazy import agar modul ini tetap bisa dipakai di luar Muse).
+    # Lokasi bin berubah antar generasi VM — coba kandidat yang ada
+    # (pola sama seperti providers/vault.py di bot-telegram-otp).
+    for bin_path in (
+        "/opt/hatch/skills/skill-creator/bin",
+        "/opt/muse/skills/custom-connector-setup/bin",
+        "/opt/hatch/workflow-skills/custom-connector-setup/bin",
+    ):
+        sys.path.insert(0, bin_path)
+        try:
+            from dynamic_credentials import dynamic_credential_entry
+        except ImportError:
+            continue
+        break
+    else:
+        raise RuntimeError("modul dynamic_credentials tidak ditemukan di VM ini")
     _surrogate_val = dynamic_credential_entry("custom.telegram-webping")["surrogate"].strip()
     _surrogate_ts = time.time()
     return _surrogate_val
